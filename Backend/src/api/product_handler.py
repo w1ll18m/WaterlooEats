@@ -4,11 +4,7 @@ from ..database.product import Product
 from .. import db
 
 class ProductListAll(Resource):
-    def get(self):
-        resteraunt_id = request.form.get("resteraunt_id")
-        if not resteraunt_id:
-            return "Please provide field 'resteraunt_id'."
-        
+    def get(self, resteraunt_id):
         existing_products = Product.query.filter_by(resteraunt_id=resteraunt_id).all()
 
         product_list = []
@@ -20,12 +16,13 @@ class ProductListAll(Resource):
                 "description": product.description, 
                 "price": product.price, 
                 "calorie_count": product.calorie_count, 
-                "image_url": product.image_url
+                "image_url": product.image_url,
+                "resteraunt_id": product.resteraunt_id
             }
 
             product_list.append(product_obj)
 
-        return product_list
+        return jsonify(product_list)
 
 class ProductPost(Resource):
     def post(self):

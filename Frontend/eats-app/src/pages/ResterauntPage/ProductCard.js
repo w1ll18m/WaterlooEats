@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardMedia, Typography, CardActionArea } from '@mui/material';
 import { Box } from "@mui/material";
 
-function ProductCard({image_url, product_name, calories, price}) {
+function ProductCard({product_id, image_url, product_name, calorie_count, price}) {
 
     const cardOnClick = () => {
         console.log("clicked!")
@@ -22,10 +22,10 @@ function ProductCard({image_url, product_name, calories, price}) {
                     </Typography>
                     <Box sx={{display: "flex", justifyContent: "space-between"}}>
                         <Typography variant="body2" color="text.secondary">
-                            (Cals: {calories})
+                            (Cals: {calorie_count})
                         </Typography>
                         <Typography variant="body2" color="text.secondary" sx={{alignSelf: "end"}}>
-                            {price}
+                            ${price.toFixed(2)}
                         </Typography>
                     </Box>
                 </CardContent>
