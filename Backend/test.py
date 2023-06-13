@@ -10,7 +10,7 @@ items = [
         },
         {
             "image_url": "https://media.npr.org/assets/img/2017/05/09/10-piece-chicken-nuggets-ss_0_custom-db31f599b4b36050d9a26986abaf75c76c655f37-s1100-c50.jpg",
-            "product_name": "Classic Breaded Chicken Nuggets",
+            "product_name": "Breaded Chicken Nuggets",
             "calorie_count": 350,
             "price": 3.00,
             "resteraunt_id": 1
@@ -45,7 +45,7 @@ items = [
         },  
         {
             "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLYhIYiuNffUebAWvfEe67s3JGrUGjP9Vk4w&usqp=CAU",
-            "product_name": "Sausage Breakfast Sandwhich Combo",
+            "product_name": "Sausage Breakfast Sandwhich",
             "calorie_count": 850,
             "price": 6.75,
             "resteraunt_id": 1
@@ -187,10 +187,6 @@ tags = [
     {
         "resteraunt_id": 1,
         "tag_name": "Combos"
-    },
-    {
-        "resteraunt_id": 1,
-        "tag_name": "All"
     }
 ]
 
@@ -204,10 +200,6 @@ for tag in tags:
     print(request.json())
 
 for i in range(1, 25):
-    obj = {"product_id": i, "tag_id": 5}
-    request = requests.post("http://127.0.0.1:5000/product-tags/add", obj)
-    print(request.json())
-
     if (i % 2 == 0):
         obj = {"product_id": i, "tag_id": 1}
         request = requests.post("http://127.0.0.1:5000/product-tags/add", obj)
