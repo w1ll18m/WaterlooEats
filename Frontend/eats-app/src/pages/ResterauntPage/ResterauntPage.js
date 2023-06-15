@@ -10,8 +10,9 @@ function ResterauntPage() {
     let tag_path = BASE_URL + "tag/list/" + RESTERAUNT_ID.toString()
     const {data: tagData, isLoading, error, setData: setTagData} = useFetch(tag_path)
     const [tagList, setTagList] = useState(tagData)
-    // const [isScrolled, setIsScrolled] = useState(true)
-    // const [scrollPosition, setScrollPosition] = useState(0)
+
+    const [scrollPosition, setScrollPosition] = useState(0)
+    const [currentPosition, setCurrentPosition] = useState(0)
 
     function navigateToTag(tag_id) {
         let navigate_id = tag_id
@@ -27,18 +28,45 @@ function ResterauntPage() {
         }
     }
 
+    function tagActive(tag_id) {
+        let grid = document.getElementById(tag_id)
+
+        // executes if product grid has not been rendered 
+        if (!grid) return false
+
+        let grid_pos = grid.getBoundingClientRect();
+
+        // returns true if grid's position in the viewport is at the top of the page
+        if (grid_pos.top <= scrollPosition && grid_pos.bottom >= scrollPosition) {   
+            return true
+        } else {
+            return false
+        }
+    }
+
     useEffect(() => {
         setTagList(tagData)
-    }, tagData)
+    }, [tagData])
 
-    /*
     useEffect(() => {
-        const handleScroll = () => {
-            setScrollPosition(window.scrollY)
-            setIsScrolled(window.scrollY > 0)
+        // sets currentPosition to current scroll position of the window
+        function handleScroll() {
+            const cur_pos = window.scrollY
+            setCurrentPosition(cur_pos)
+        }
+
+        // causes the ResterauntPage component to rerender every time page is scrolled (NEED REFACTORING)
+        window.addEventListener('scroll', handleScroll)
+
+        // stores the position of the top of the page into scrollPosition variable
+        let product_div = document.getElementById("product_div")
+        let div_pos = product_div.getBoundingClientRect();
+        setScrollPosition(div_pos.top)
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll)
         }
     }, [])
-    */
 
     return (
         <div>
@@ -58,7 +86,8 @@ function ResterauntPage() {
                                     onClick={() => navigateToTag(tag.tag_id)} 
                                     sx={{fontWeight: "medium", color: "black", position: "fixed"}} 
                                     size="small">
-                                    {tag.tag_name}
+                                    {/* underlines button content if grid's position is at the top of the page */}
+                                    {tagActive("tag_" + tag.tag_id) ? <u>{tag.tag_name}</u> : tag.tag_name}
                                 </Button>
                                 <br/>
                             </div>
@@ -69,12 +98,12 @@ function ResterauntPage() {
                             onClick={() => navigateToTag("all_products")} 
                             sx={{fontWeight: "medium", color: "black", position: "fixed"}} 
                             size="small">
-                            All Products
+                            {tagActive("all_products") ? <u>All Products</u> : <text>All Products</text>}
                         </Button>
                         <br/>
                     </div>
                 </div>
-                <div>
+                <div id="product_div">
                     {tagList && tagList.map((tag) => {
                         let path = BASE_URL + "product-tags/list-product-by-tag/" + tag.tag_id.toString()
                         return(

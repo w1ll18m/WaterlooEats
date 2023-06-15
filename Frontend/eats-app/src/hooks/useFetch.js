@@ -16,7 +16,7 @@ const useFetch = (url) => {
         }
 
         const data = await response.json();
-        console.log(data)
+        // console.log(data) -> uncomment for testing
         setData(data);
       } catch (error) {
         setError(error);

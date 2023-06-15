@@ -21,19 +21,10 @@ function ProductGrid({load_endpoint}) {
     
     useEffect(() => {
         setProductList(data)
-    }, data)
-
-    function lol() {
-        return(
-            <div>
-                Hello
-            </div>
-        )
-    }
+    }, [data])
 
     return(
         <Grid container spacing={2}>
-            {isLoading && lol()}
             {productList && productList.map((product) => {
                 return(
                     <Grid item xs={12} sm={4} md={2} lg={2}>
