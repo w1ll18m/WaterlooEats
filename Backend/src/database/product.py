@@ -1,6 +1,6 @@
 from .. import db
 
-class Product(db.Model):
+class Product(db.Model): # One-to-Many relationship between Resteraunt and Product
     product_id = db.Column(
         db.Integer,
         primary_key=True
@@ -38,9 +38,11 @@ class Product(db.Model):
 
     resteraunt_id = db.Column(
         db.Integer,
-        unique=False,
+        db.ForeignKey("resteraunt.resteraunt_id"),
         nullable=False
     )
+
+    tags = db.relationship("ProductTags", backref="product", cascade="all, delete")
 
     def __init__(self, product_name, description, price, calorie_count, image_url, resteraunt_id):
         self.product_name = product_name

@@ -1,14 +1,16 @@
 from .. import db
 
-class ProductTags(db.Model): # Many-to-Many relationship between Product and Tag
+class ProductTags(db.Model): # JointTable between Product and Tag
     product_id = db.Column(
         db.Integer,
+        db.ForeignKey("product.product_id"),
         primary_key=True,
         autoincrement=False
     )
 
     tag_id = db.Column(
         db.Integer,
+        db.ForeignKey("tag.tag_id"),
         primary_key=True,
         autoincrement=False
     )

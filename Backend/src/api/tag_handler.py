@@ -1,6 +1,7 @@
 from flask_restful import Resource
 from flask import request, jsonify
 from ..database.tags import Tag
+from ..database.resteraunt import Resteraunt
 from .. import db
 
 class TagListAll(Resource):
@@ -34,6 +35,9 @@ class TagPost(Resource):
         new_resteraunt_id = request.form.get("resteraunt_id")
         if not new_resteraunt_id:
             return "Please provide field 'resteraunt_id'."
+        existing_resteraunt = Resteraunt.query.get(new_resteraunt_id)
+        if not existing_resteraunt:
+            return f"Resteraunt wth 'resteraunt_id' {new_resteraunt_id} does not exist."
         
         new_tag = Tag(new_tag_name, new_resteraunt_id)
         db.session.add(new_tag)

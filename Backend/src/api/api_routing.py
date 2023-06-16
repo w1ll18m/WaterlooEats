@@ -1,10 +1,15 @@
 from .product_handler import *
 from .tag_handler import *
 from .product_tags_handler import *
+from .resteraunt_handler import *
 
 class Routes():
     def __init__(self):
         self.routes = [
+            {"class": ResterauntPost, "route_url": "/resteraunt/add"},
+            {"class": ResterauntGet, "route_url": "/resteraunt/get/<int:resteraunt_id>"},
+            {"class": ResterauntDelete, "route_url": "/resteraunt/delete/<int:resteraunt_id>"},
+
             {"class": ProductListAll, "route_url": "/product/list/<int:resteraunt_id>"},
             {"class": ProductPost, "route_url": "/product/add"},
             {"class": ProductDelete, "route_url": "/product/delete/<int:product_id>"},

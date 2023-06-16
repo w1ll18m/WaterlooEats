@@ -9,16 +9,16 @@ class ListProductByTag(Resource):
     def get(self, tag_id):
         existing_entries = ProductTags.query.filter_by(tag_id=tag_id).all()
 
-        product_id_list = []
+        print(existing_entries[0].product)
 
-        for entry in existing_entries:
-            product_id_list.append(entry.product_id)
-        
         product_list = []
 
-        for product_id in product_id_list:
-            product = Product.query.get(product_id)
+        for entry in existing_entries:
+            product_list.append(entry.product)
+        
+        product_obj_list = []
 
+        for product in product_list:
             product_obj = {
                 "product_id": product.product_id, 
                 "product_name": product.product_name, 
@@ -29,43 +29,47 @@ class ListProductByTag(Resource):
                 "resteraunt_id": product.resteraunt_id
             }
 
-            product_list.append(product_obj)
+            product_obj_list.append(product_obj)
 
-        return jsonify(product_list)
+        return jsonify(product_obj_list)
 
 class ListTagByProduct(Resource):
     def get(self, product_id):
         existing_entries = ProductTags.query.filter_by(product_id=product_id).all()
 
-        tag_id_list = []
-
-        for entry in existing_entries:
-            tag_id_list.append(entry.tag_id)
-        
         tag_list = []
 
-        for tag_id in tag_id_list:
-            tag = Tag.query.get(tag_id)
+        for entry in existing_entries:
+            tag_list.append(entry.tag)
+        
+        tag_obj_list = []
 
+        for tag in tag_list:
             tag_obj = {
                 "tag_id": tag.tag_id, 
                 "tag_name": tag.tag_name, 
                 "resteraunt_id": tag.resteraunt_id
             }
 
-            tag_list.append(tag_obj)
+            tag_obj_list.append(tag_obj)
 
-        return jsonify(tag_list)
+        return jsonify(tag_obj_list)
 
 class ProductTagPost(Resource):
     def post(self):
         new_product_id = request.form.get("product_id")
         if not new_product_id:
             return "Please provide field 'product_id'."
+        existing_product = Product.query.get(new_product_id)
+        if not existing_product:
+            return f"Product wth 'product_id' {new_product_id} does not exist."
         
         new_tag_id = request.form.get("tag_id")
         if not new_tag_id:
             return "Please provide field 'tag_id'."
+        existing_tag = Tag.query.get(new_tag_id)
+        if not existing_tag:
+            return f"Tag wth 'tag_id' {new_tag_id} does not exist."
         
         existing_entries = ProductTags.query.filter_by(product_id=new_product_id)
         existing_entry = existing_entries.filter_by(tag_id=new_tag_id).first()

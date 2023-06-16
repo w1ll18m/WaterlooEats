@@ -1,5 +1,17 @@
 import requests
 
+resteraunts = [
+    {
+        "image_url": "https://imageio.forbes.com/specials-images/imageserve/5d77914da3159c0008a93d96/Wendy-s-breakfast-menu-/960x0.jpg?format=jpg&width=960",
+        "resteraunt_name": "Wendy's",
+        "delivery_fee": 3.99,
+        "location": "2355 Trafalgar Rd Bldg A1",
+        "cuisine_type": "Fast Food",
+        "opening_hours": "8:00",
+        "closing_hours": "22:00"
+    }
+]
+
 items = [
         {
             "image_url": "https://mma.prnewswire.com/media/1227532/Wendys_4_for_4_Spicy_Chicken.jpg",
@@ -190,9 +202,12 @@ tags = [
     }
 ]
 
+for resteraunt in resteraunts:
+    request = requests.post("http://127.0.0.1:5000/resteraunt/add", resteraunt)
+    print(request.json())
+
 for item in items:
     request = requests.post("http://127.0.0.1:5000/product/add", item)
-    # request = request.json()
     print(request.json())
 
 for tag in tags:

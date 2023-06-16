@@ -7,20 +7,30 @@ db = SQLAlchemy()
 
 def create_app():
     DB_NAME = 'waterlooeats.db'
-    SECRET_KEY = 'temporary_key'
 
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
-    app.config['SECRET_KEY'] = SECRET_KEY
-    CORS(app) # enables for cross origin resource sharing for api routes
+    # enables for cross origin resource sharing for api routes
+    CORS(app) 
 
     db.init_app(app)
+    
+    # the following snippet of code is used to enable foreign key support for SQLite databases
+    if 'sqlite' in app.config['SQLALCHEMY_DATABASE_URI']:
+        def _fk_pragma_on_connect(dbapi_con, con_record):  # noqa
+            dbapi_con.execute('pragma foreign_keys=ON')
+
+        with app.app_context():
+            from sqlalchemy import event
+            event.listen(db.engine, 'connect', _fk_pragma_on_connect)
 
     api = Api(app)
 
     from .database.product import Product
     from .database.tags import Tag
     from .database.product_tags import ProductTags
+    from .database.resteraunt import Resteraunt
+    from .database.hours import Hour
 
     with app.app_context():
         db.create_all()
@@ -35,9 +45,5 @@ def create_app():
 
     for route in route_list:
         api.add_resource(route["class"], route["route_url"])
-
-    @app.route('/')
-    def home():
-        return "This is just to test various features"
 
     return app

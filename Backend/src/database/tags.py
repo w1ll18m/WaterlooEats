@@ -14,9 +14,11 @@ class Tag(db.Model): # One-to-Many relationship between Resteraunt and Tag
 
     resteraunt_id = db.Column(
         db.Integer,
-        unique=False,
+        db.ForeignKey("resteraunt.resteraunt_id"),
         nullable=False
     )
+
+    products = db.relationship("ProductTags", backref="tag", cascade="all, delete")
 
     def __init__(self, tag_name, resteraunt_id):
         self.tag_name = tag_name
