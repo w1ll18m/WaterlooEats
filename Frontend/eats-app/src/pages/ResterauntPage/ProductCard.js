@@ -34,4 +34,16 @@ function ProductCard({product_id, image_url, product_name, calorie_count, price}
     )
 }
 
-export default ProductCard
+function createProductCard(product) {
+    return (
+        <ProductCard    
+            product_id = {product.product_id}
+            image_url = {product.image_url}
+            product_name = {product.product_name}
+            calorie_count = {product.calorie_count}
+            price = {product.price}
+        />
+    )
+}
+
+export { ProductCard, createProductCard }

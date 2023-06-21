@@ -1,27 +1,33 @@
 import { useState, useEffect } from "react";
-import useFetch from "../../hooks/useFetch";
-import ProductCard from "./ProductCard";
+import  { createProductCard } from "./ProductCard";
 import { Grid } from "@mui/material";
 
 function ProductGrid({load_endpoint}) {
-    const {data, isLoading, error, setData} = useFetch(load_endpoint)
     const [productList, setProductList] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState(false)
 
-    function createProductCard(product) {
-        return (
-            <ProductCard    
-                product_id = {product.product_id}
-                image_url = {product.image_url}
-                product_name = {product.product_name}
-                calorie_count = {product.calorie_count}
-                price = {product.price}
-            />
-        )
-    }
-    
     useEffect(() => {
-        setProductList(data)
-    }, [data])
+        const fetchData = async () => {
+            setIsLoading(true);
+
+            try {
+                const response = await fetch(load_endpoint, {method: "POST"});
+                if (!response.ok) {
+                  throw new Error("Failed to fetch data");
+                }
+        
+                const data = await response.json();
+                setProductList(data);
+            } catch (error) {
+                setError(error);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        fetchData()
+    }, [])
 
     return(
         <Grid container spacing={2}>
