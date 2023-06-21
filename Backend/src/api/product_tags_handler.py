@@ -6,10 +6,18 @@ from ..database.tags import Tag
 from .. import db
 
 class ListProductByTag(Resource):
-    def get(self, tag_id):
-        existing_entries = ProductTags.query.filter_by(tag_id=tag_id).all()
+    def post(self, tag_id):
+        existing_entries = ProductTags.query.filter_by(tag_id=tag_id)
 
-        print(existing_entries[0].product)
+        paginated_page_num = request.form.get("page_num")
+        if paginated_page_num: paginated_page_num = int(paginated_page_num)
+        paginated_items_per = request.form.get("items_per")
+        if paginated_items_per: paginated_items_per = int(paginated_items_per)
+        
+        if paginated_page_num and paginated_items_per:
+            existing_entries = existing_entries.paginate(page=paginated_page_num, per_page=paginated_items_per).items
+        else:
+            existing_entries = existing_entries.all()
 
         product_list = []
 

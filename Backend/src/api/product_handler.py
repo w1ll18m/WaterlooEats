@@ -5,8 +5,18 @@ from ..database.resteraunt import Resteraunt
 from .. import db
 
 class ProductListAll(Resource):
-    def get(self, resteraunt_id):
-        existing_products = Product.query.filter_by(resteraunt_id=resteraunt_id).all()
+    def post(self, resteraunt_id):
+        existing_products = Product.query.filter_by(resteraunt_id=resteraunt_id)
+
+        paginated_page_num = request.form.get("page_num")
+        if paginated_page_num: paginated_page_num = int(paginated_page_num)
+        paginated_items_per = request.form.get("items_per")
+        if paginated_items_per: paginated_items_per = int(paginated_items_per)
+
+        if paginated_page_num and paginated_items_per:
+            existing_products = existing_products.paginate(page=paginated_page_num, per_page=paginated_items_per).items
+        else:
+            existing_products = existing_products.all()
 
         product_list = []
 
