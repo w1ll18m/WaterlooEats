@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import useFetch from "../../hooks/useFetch";
 import ProductGrid from "./ProductGrid";
-import ResterauntHeader from "./ResterauntHeader";
 import { Button, Typography } from "@mui/material";
 
 const BASE_URL = "http://127.0.0.1:5000/"
@@ -9,7 +8,7 @@ const RESTERAUNT_ID = 1
 
 function ResterauntPage() {
     let tag_path = BASE_URL + "tag/list/" + RESTERAUNT_ID.toString()
-    const {data: tagData, isLoading: tagLoading, error: tagError, setData: setTagData} = useFetch(tag_path)
+    const {data: tagData, isLoading, error, setData: setTagData} = useFetch(tag_path)
     const [tagList, setTagList] = useState(tagData)
 
     const [scrollPosition, setScrollPosition] = useState(0)
@@ -70,12 +69,16 @@ function ResterauntPage() {
     }, [])
 
     return (
-        <div style={{height: "100vh"}}>
-            <div style={{height: "25%"}}>
-                <ResterauntHeader resteraunt_id={RESTERAUNT_ID}/>
+        <div>
+            <div style={{height: "30%"}}>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
             </div>
-            <div style={{height:"75%", display: "flex"}}>
-                <div id="tag_div" style={{width: "15%"}}> 
+            <div style={{height:"70%", display: "flex"}} id="product_list">
+                <div style={{width: "40%"}}> 
                     {tagList && tagList.map((tag) => {
                         return(
                             <div style={{marginBottom: "7.5%", marginLeft: "7.5%"}}>
@@ -95,12 +98,12 @@ function ResterauntPage() {
                             onClick={() => navigateToTag("all_products")} 
                             sx={{fontWeight: "medium", color: "black", position: "fixed"}} 
                             size="small">
-                            {tagActive("all_products") ? <u>All Products</u> : <p>All Products</p>}
+                            {tagActive("all_products") ? <u>All Products</u> : <text>All Products</text>}
                         </Button>
                         <br/>
                     </div>
                 </div>
-                <div id="product_div" style={{width: "85%"}}>
+                <div id="product_div">
                     {tagList && tagList.map((tag) => {
                         let path = BASE_URL + "product-tags/list-product-by-tag/" + tag.tag_id.toString()
                         return(
