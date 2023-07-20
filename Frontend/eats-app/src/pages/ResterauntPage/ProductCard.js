@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Card, CardContent, CardMedia, Typography, CardActionArea } from '@mui/material';
 import { Box } from "@mui/material";
+import ProductModal from "./ProductModal";
 
 function ProductCard({product_id, image_url, product_name, calorie_count, price}) {
+    const [modalOpen, setModalOpen] = useState(false)
 
     const cardOnClick = () => {
         console.log("clicked!")
@@ -10,7 +12,7 @@ function ProductCard({product_id, image_url, product_name, calorie_count, price}
 
     return (
         <Card variant="outlined" sx={{ maxWidth: 300, maxHeight: 400 }}>
-            <CardActionArea onClick={cardOnClick}>
+            <CardActionArea onClick={() => setModalOpen(true)}>
                 <CardMedia
                     sx={{ height: 150 }}
                     image={image_url}
@@ -30,6 +32,7 @@ function ProductCard({product_id, image_url, product_name, calorie_count, price}
                     </Box>
                 </CardContent>
             </CardActionArea>
+            {modalOpen && <ProductModal/>}
         </Card>
     )
 }
