@@ -3,6 +3,7 @@ from .product_handler import *
 from .tag_handler import *
 from .product_tags_handler import *
 from .resteraunt_handler import *
+from .auth_handler import *
 import os
 
 class Routes():
@@ -24,7 +25,11 @@ class Routes():
             {"class": ListProductByTag, "route_url": "/product-tags/list-product-by-tag/<int:tag_id>"}, # POST
             {"class": ListTagByProduct, "route_url": "/product-tags/list-tag-by-product/<int:product_id>"}, # GET
             {"class": ProductTagPost, "route_url": "/product-tags/add"}, # POST
-            {"class": ProductTagDelete, "route_url": "/product-tags/delete/<int:product_id>/<int:tag_id>"} # DELETE
+            {"class": ProductTagDelete, "route_url": "/product-tags/delete/<int:product_id>/<int:tag_id>"}, # DELETE
+
+            {"class": SignUpUser, "route_url": "/auth/add-user"}, # POST
+            {"class": Login, "route_url": "/auth/login"}, # POST
+            {"class": ValidateJWTToken, "route_url": "/auth/checkjwt"}, # GET
         ]
 
         self.flask_app = flask_app
@@ -36,5 +41,4 @@ class Routes():
         
         @self.flask_app.route("/home")
         def home():
-            print(os.path.abspath(self.flask_app.template_folder))
-            render_template("index.html")
+            return("Home")

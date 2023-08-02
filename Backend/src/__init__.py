@@ -2,22 +2,17 @@ from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
 from flask_cors import CORS
-from pathlib import Path
-import os
 
 db = SQLAlchemy()
 
 def create_app():
     DB_NAME = 'waterlooeats.db'
 
-    app = Flask(__name__, template_folder="..\\Frontend\\eats-app\\public")
-    
-    print(os.path.abspath(app.template_folder))
-    file_list = os.listdir(os.path.abspath(app.template_folder))
-    for file_name in file_list:
-        print(file_name)
+    app = Flask(__name__)
 
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
+    # SECRET_KEY is used for JWT token authentication
+    app.config['SECRET_KEY'] = "d05bd4c933fe2564f580c72ac717a02749deaba4158d31544836aa6043f34ddf"
     # enables for cross origin resource sharing for api routes
     CORS(app) 
 
@@ -39,6 +34,7 @@ def create_app():
     from .database.product_tags import ProductTags
     from .database.resteraunt import Resteraunt
     from .database.hours import Hour
+    from .database.resteraunt_owner import ResterauntOwner
 
     with app.app_context():
         db.create_all()
