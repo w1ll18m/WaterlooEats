@@ -202,33 +202,48 @@ tags = [
     }
 ]
 
+user_data = {"username": "admin", "password": "password123", "email": "admin@gmail.com"}
+request = requests.post("http://127.0.0.1:5000/auth/add-user", data=user_data)
+print(request.text)
+
+request = requests.post("http://localhost:5000/auth/login", data=user_data)
+if request.status_code == 200:
+    token = request.json()["token"]
+    print("Token: " + token)
+else:
+    token = ""
+    print(request.text)
+headers = {
+    "Authorization": token
+}
+
 for resteraunt in resteraunts:
-    request = requests.post("http://127.0.0.1:5000/resteraunt/add", resteraunt)
-    print(request.json())
+    request = requests.post("http://127.0.0.1:5000/resteraunt/add", data=resteraunt, headers=headers)
+    print(request.text)
 
 for item in items:
-    request = requests.post("http://127.0.0.1:5000/product/add", item)
-    print(request.json())
+    request = requests.post("http://127.0.0.1:5000/product/add", data=item, headers=headers)
+    print(request.text)
 
 for tag in tags:
-    request = requests.post("http://127.0.0.1:5000/tag/add", tag)
-    print(request.json())
+    request = requests.post("http://127.0.0.1:5000/tag/add", data=tag, headers=headers)
+    print(request.text)
 
 for i in range(1, 25):
     if (i % 2 == 0):
         obj = {"product_id": i, "tag_id": 1}
-        request = requests.post("http://127.0.0.1:5000/product-tags/add", obj)
-        print(request.json())
+        request = requests.post("http://127.0.0.1:5000/product-tags/add", data=obj, headers=headers)
+        print(request.text)
     if (i % 3 == 0):
         obj = {"product_id": i, "tag_id": 2}
-        request = requests.post("http://127.0.0.1:5000/product-tags/add", obj)
-        print(request.json())
+        request = requests.post("http://127.0.0.1:5000/product-tags/add", data=obj, headers=headers)
+        print(request.text)
     if (i % 4 == 0):
         obj = {"product_id": i, "tag_id": 3}
-        request = requests.post("http://127.0.0.1:5000/product-tags/add", obj)
-        print(request.json())
+        request = requests.post("http://127.0.0.1:5000/product-tags/add", data=obj, headers=headers)
+        print(request.text)
     if (i % 5 == 0):
         obj = {"product_id": i, "tag_id": 4}
-        request = requests.post("http://127.0.0.1:5000/product-tags/add", obj)
-        print(request.json())
+        request = requests.post("http://127.0.0.1:5000/product-tags/add", data=obj, headers=headers)
+        print(request.text)
     

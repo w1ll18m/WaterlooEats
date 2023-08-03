@@ -1,7 +1,8 @@
 from flask_restful import Resource
-from flask import request, jsonify
+from flask import request, jsonify, make_response
 from ..database.tags import Tag
 from ..database.resteraunt import Resteraunt
+from ..api.auth_handler import token_required
 from .. import db
 
 class TagListAll(Resource):
@@ -22,39 +23,41 @@ class TagListAll(Resource):
         return jsonify(tag_list)
 
 class TagPost(Resource):
+    @token_required
     def post(self):
         new_tag_name = request.form.get("tag_name")
         if not new_tag_name:
-            return "Please provide field 'tag_name'."
+            return make_response("Please provide field 'tag_name'.", 400)
         new_tag_name = str(new_tag_name).strip()
 
         existing_tag = Tag.query.filter_by(tag_name=new_tag_name).first()
         if existing_tag:
-            return f"Tag with tag_name '{new_tag_name}' already exists."
+            return make_response(f"Tag with tag_name '{new_tag_name}' already exists.", 409)
 
         new_resteraunt_id = request.form.get("resteraunt_id")
         if not new_resteraunt_id:
-            return "Please provide field 'resteraunt_id'."
+            return make_response("Please provide field 'resteraunt_id'.", 400)
         existing_resteraunt = Resteraunt.query.get(new_resteraunt_id)
         if not existing_resteraunt:
-            return f"Resteraunt wth 'resteraunt_id' {new_resteraunt_id} does not exist."
+            return make_response(f"Resteraunt wth 'resteraunt_id' {new_resteraunt_id} does not exist.", 404)
         
         new_tag = Tag(new_tag_name, new_resteraunt_id)
         db.session.add(new_tag)
         db.session.commit()
 
-        return f"Tag with name '{new_tag_name}' succesfully created."
+        return make_response(f"Tag with name '{new_tag_name}' succesfully created.", 200)
     
 class TagDelete(Resource):
+    @token_required
     def delete(self, tag_id):
         existing_tag = Tag.query.filter_by(tag_id=tag_id).first()
         if not existing_tag:
-            return f"Tag with id '{tag_id}' does not exist."
+            return make_response(f"Tag with id '{tag_id}' does not exist.", 404)
         
         db.session.delete(existing_tag)
         db.session.commit()
 
-        return f"Tag with id '{tag_id}' sucessfully deleted"
+        return make_response(f"Tag with id '{tag_id}' sucessfully deleted", 200)
 
 
 

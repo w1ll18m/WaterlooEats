@@ -20,9 +20,16 @@ class ResterauntOwner(db.Model):
     )
 
     password = db.Column(
-        db.String(8),
+        db.String(80),
         nullable = False,
         unique = False
+    )
+
+    email = db.Column(
+        db.String(50),
+        nullable = False,
+        unique = True,
+        index = True
     )
 
     created_at = db.Column(
@@ -31,10 +38,11 @@ class ResterauntOwner(db.Model):
         nullable = True
     )
 
-    def __init__(self, public_id, username, password, created_at):
+    def __init__(self, public_id, username, password, email, created_at):
         self.public_id = public_id
         self.username = username
         self.password = password
+        self.email = email
         self.created_at = created_at
     
     def __repr__(self):
