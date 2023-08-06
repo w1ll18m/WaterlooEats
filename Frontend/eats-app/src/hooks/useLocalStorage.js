@@ -9,9 +9,9 @@ export const useLocalStorage = () => {
     }
 
     function getItem(key) {
-        value = localStorage.getItem(key)
-        setValue(value)
-        return value
+        let requested_value = localStorage.getItem(key)
+        setValue(requested_value)
+        return requested_value
     }
 
     function removeItem(key) {

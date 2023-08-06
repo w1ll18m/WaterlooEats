@@ -4,12 +4,15 @@ import { useFormik } from "formik"
 import * as Yup from 'yup'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useAuth } from "../../providers/AuthProvider";
+import { useNavigate } from "react-router-dom";
 
 const BASE_URL = "http://127.0.0.1:5000/"
 
 const LoginPage = () => {
+    const authentication = useAuth()
+    const navigate = useNavigate()
     const [currentStage, setCurrentStage] = useState("One")
-    const [showPassword, setShowPassword] = useState(false)
 
     const stageOneValidationScheme = Yup.object({
         username: Yup.string(),
@@ -79,12 +82,15 @@ const LoginPage = () => {
                     return
                 }
                 res.json().then((response) => {
-                    let jwt_token = response.token
-                    let user_role = response.role 
-                    let user_id = response.id
-                    console.log("Authentication Token: ", jwt_token)
+                    let authenticated_user = {
+                        token: response.token,
+                        role: response.role,
+                        id: response.id
+                    }
+                    authentication.login(authenticated_user)
+                    navigate("/")
                 })
-            })
+            })  
         } catch(error) {
             console.log("userLogIn Error: ", error)
         }

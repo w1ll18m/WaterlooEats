@@ -1,15 +1,16 @@
-import ResterauntPage from './pages/ResterauntPage/ResterauntPage.js';
-import LoginPage from './pages/LoginPage/LoginPage.js';
+import PageRoutes from './routes/PageRoutes.js';
+import NavBar from './routes/NavBar.js';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './providers/AuthProvider.js';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/resteraunts" element={<ResterauntPage/>}/>
-        <Route path="/login" element={<LoginPage/>}/>
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <NavBar/>
+        <PageRoutes/>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
