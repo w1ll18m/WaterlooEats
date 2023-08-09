@@ -5,18 +5,25 @@ import * as Yup from 'yup'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from "react-router-dom";
-
-const BASE_URL = "http://127.0.0.1:5000/"
+import { useAuth0 } from "@auth0/auth0-react";
 
 const SignupPage = () => {
     const navigate = useNavigate()
+    const { getIdTokenClaims, getAccessTokenSilently } = useAuth0()
 
-    const handleSignup = async () => {
-        const myPath = BASE_URL + "/auth/add-user"
+    getAccessTokenSilently().then((data) => {
+        console.log(data)
+    })
+
+    const handleCreateUser = async () => {
+        const idToken = await getIdTokenClaims()
+        const myPath = process.env.REACT_APP_SERVER_BASE_URL + "/auth/create-user"
         let formData = new FormData()
-        formData.append("username", formik.values.username)
-        formData.append("email", formik.values.email)
-        formData.append("password", formik.values.password)
+
+        formData.append("uuid", idToken.sub)
+        formData.append("email", idToken.email) 
+        formData.append("phone_number", formik.values.phone_number)
+        formData.append("address", formik.values.address)
 
         try {
             const res = await fetch(myPath, {method: "POST", body: formData})
@@ -28,69 +35,52 @@ const SignupPage = () => {
                 })
                 return
             }
-            navigate("/login")
+            navigate("/resteraunts")
         } catch(error) {
-            console.log("handleSignup Error:", error)
+            console.error("handleSignup Error:", error)
         }
     }
 
     const formikValidationSchema = Yup.object({
-        username: Yup.string()
-            .required("Username is Required")
-            .min(3, "Username Must Be More Than 3 Characters")
-            .max(30, "Username Must Be Less Than 30 Characters"),
-        email: Yup.string()
-            .max(50, "Email must be less than 50 characters")
-            .required("Email is Required")
-            .email("Invalid Email Address") ,
-        password: Yup.string().required("Passowrd is Required")
-            .min(5, "Password Must Be More Than 5 Characters")
-            .max(30, "Password Must Be Less Than 30 Characters")
-            .required("Password is Required")
+        phone_number: Yup.string()
+            .required("Phone Number is Required")
+            .length(10, "Invalid Phone Number")
+            .matches(/^\d{10}$/, "Invalid Phone Number"),
+        address: Yup.string()
+            .max(128, "Address must be less than 128 Characters")
+            .required("Address is Required")
     })
 
     const formik = useFormik({
-        initialValues: {username: "", email: "", password: ""},
-        onSubmit: handleSignup,
+        initialValues: {phone_number: "", address: ""},
+        onSubmit: handleCreateUser,
         validationSchema: formikValidationSchema
     })
 
     return(
         <Box>
             <Box sx={{marginTop: 10, marginLeft: 30, marginRight: 30}} style={{display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: 10}}>
-                <Typography variant="h5">Create your account</Typography>
+                <Typography variant="h5">Finish creating your account</Typography>
 
                 <TextField 
-                    name="username" label="Username" 
-                    value={formik.values.username} onChange={formik.handleChange} onBlur={formik.handleBlur} 
-                    variant="outlined" error={formik.touched.username && formik.errors.username} style={{width: "50%"}}
+                    name="phone_number" label="Phone Number"
+                    value={formik.values.phone_number} onChange={formik.handleChange} onBlur={formik.handleBlur} 
+                    variant="outlined" error={formik.touched.phone_number && formik.errors.phone_number} style={{width: "50%"}}
                 />
-                {formik.touched.username && formik.errors.username && 
+                {formik.touched.phone_number && formik.errors.phone_number && 
                     <Box style={{width: "50%"}}>
-                        <Typography color="red" variant="subtitle2">{formik.errors.username}</Typography>
+                        <Typography color="red" variant="subtitle2">{formik.errors.phone_number}</Typography>
                     </Box>
                 }
 
                 <TextField 
-                    name="email" label="Email" 
-                    value={formik.values.email} onChange={formik.handleChange} onBlur={formik.handleBlur} 
-                    variant="outlined" error={formik.touched.email && formik.errors.email} style={{width: "50%"}}
+                    name="address" label="Home Address" 
+                    value={formik.values.address} onChange={formik.handleChange} onBlur={formik.handleBlur} 
+                    variant="outlined" error={formik.touched.address && formik.errors.address} style={{width: "50%"}}
                 />
-                {formik.touched.email && formik.errors.email && 
+                {formik.touched.address && formik.errors.address && 
                     <Box style={{width: "50%"}}>
-                        <Typography color="red" variant="subtitle2">{formik.errors.email}</Typography>
-                    </Box>
-                }
-
-                <TextField 
-                    name="password" label="Password" 
-                    value={formik.values.passowrd} onChange={formik.handleChange} onBlur={formik.handleBlur} 
-                    variant="outlined" type="password"
-                    error={formik.touched.password && formik.errors.password} style={{width: "50%"}}
-                />
-                {formik.touched.password && formik.errors.password && 
-                    <Box style={{width: "50%"}}>
-                        <Typography color="red" variant="subtitle2">{formik.errors.password}</Typography>
+                        <Typography color="red" variant="subtitle2">{formik.errors.address}</Typography>
                     </Box>
                 }
 

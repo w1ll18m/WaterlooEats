@@ -5,12 +5,15 @@ import * as Yup from 'yup'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from "../../providers/AuthProvider";
+import { useAuth0 } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
+import GoogleButton from 'react-google-button'
 
 const BASE_URL = "http://127.0.0.1:5000/"
 
 const LoginPage = () => {
-    const authentication = useAuth()
+    const {user, isAuthenticated, login, logout} = useAuth()
+    const {loginWithRedirect} = useAuth0()
     const navigate = useNavigate()
     const [currentStage, setCurrentStage] = useState("One")
 
@@ -87,7 +90,7 @@ const LoginPage = () => {
                         role: response.role,
                         id: response.id
                     }
-                    authentication.login(authenticated_user)
+                    login(authenticated_user) 
                     navigate("/")
                 })
             })  
@@ -158,6 +161,8 @@ const LoginPage = () => {
                         <Typography> or continue with third-party service </Typography>
                         <Divider/>
                     </Box>
+
+                    <GoogleButton onClick={loginWithRedirect} style={{width: "50%"}}/>
                 </Box>
             }
             {currentStage == "Two" &&

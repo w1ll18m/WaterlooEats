@@ -1,21 +1,19 @@
 import * as React from 'react';
 import { useNavigate } from "react-router-dom";
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
+import { Button, IconButton, AppBar, Box, Toolbar, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import AccountCircle from '@mui/icons-material/AccountCircle';
+import ProfileIcon from './ProfileIcon';
 import { useAuth } from '../providers/AuthProvider';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const NavBar = () => {
     const authentication = useAuth()
+    const {isAuthenticated, loginWithRedirect, logout} = useAuth0()
     const navigate = useNavigate()
 
     const handleLogOut = () => {
         authentication.logout()
+        logout()
         navigate("/login")
     }
 
@@ -23,43 +21,19 @@ const NavBar = () => {
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static">
                 <Toolbar>
-                    <IconButton
-                        size="large"
-                        edge="start"
-                        color="inherit"
-                        aria-label="menu"
-                        sx={{ mr: 2 }}
-                    >
+                    <IconButton size="large" edge="start" color="inherit" aria-label="menu" sx={{ mr: 2 }}>
                         <MenuIcon />
                     </IconButton>
+
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         WaterlooEats
                     </Typography>
-                    {!authentication.user && 
-                        <Button color="inherit" onClick={() => navigate("/login")}>
-                            Login
-                        </Button>
-                    }
-                    {!authentication.user && 
-                        <Button color="inherit" onClick={() => navigate("/sign-up")}>
-                            Sign Up
-                        </Button>
-                    }
-                    {authentication.user && 
-                        <Button color="inherit" onClick={navigate("/resteraunts")}>
-                            Resteraunts
-                        </Button>
-                    }
-                    {authentication.user && 
-                        <IconButton size="large" edge="end" color="inherit">
-                            <AccountCircle />
-                        </IconButton>
-                    }
-                    {authentication.user && 
-                        <Button color="inherit" onClick={handleLogOut}>
-                            Sign Out
-                        </Button>
-                    }
+
+                    {!authentication.user && <Button color="inherit" onClick={() => navigate("/login")}> Login </Button>}
+                    {!authentication.user && <Button color="inherit" onClick={() => navigate("/sign-up")}> Sign Up </Button>}
+                    {authentication.user && <Button color="inherit" onClick={navigate("/resteraunts")}> Resteraunts </Button>}
+                    {isAuthenticated && <ProfileIcon/>}
+                    {isAuthenticated && <Button color="inherit" onClick={handleLogOut}> Sign Out </Button>}
                 </Toolbar>
             </AppBar>
         </Box>
