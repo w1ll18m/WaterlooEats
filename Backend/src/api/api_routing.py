@@ -31,6 +31,10 @@ class Routes():
             {"class": Login, "route_url": "/auth/login"}, # POST
             {"class": ValidateJWTToken, "route_url": "/auth/checkjwt"}, # GET
             {"class": ValidateExistingUser, "route_url": "/auth/checkuser"}, # POST
+
+            {"class": CheckExistingUser, "route_url": "/auth/check-existing-user"}, # POST
+            {"class": CreateNewUser, "route_url": "/auth/create-user"}, # POST
+            {"class": ValidateAuth0Token, "route_url": "/auth/checkauth0"}, # GET
         ]
 
         self.flask_app = flask_app

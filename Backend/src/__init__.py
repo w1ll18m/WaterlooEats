@@ -35,12 +35,13 @@ def create_app():
     from .database.resteraunt import Resteraunt
     from .database.hours import Hour
     from .database.resteraunt_owner import ResterauntOwner
+    from .database.user import User
 
     with app.app_context():
+        # db.drop_all() -> for testing purposes
+
         db.create_all()
         print("Created Database")
-
-        # db.drop_all() -> for testing purposes
 
     from .api.api_routing import Routes
 

@@ -20,7 +20,7 @@ class ResterauntOwner(db.Model):
     )
 
     password = db.Column(
-        db.String(80),
+        db.String(30),
         nullable = False,
         unique = False
     )
