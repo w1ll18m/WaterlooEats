@@ -1,11 +1,12 @@
 from flask_restful import Resource
 from flask import request, jsonify, make_response
 from ..database.resteraunt import Resteraunt
-from ..api.auth_handler import token_required
+from ..api.auth_handler import token_required, scope_required
 from ..database.hours import Hour
 from .. import db
 
 class ResterauntGet(Resource):
+    @token_required
     def get(self, resteraunt_id):
         existing_resteraunt = Resteraunt.query.get(resteraunt_id)
         if not existing_resteraunt:
@@ -25,7 +26,7 @@ class ResterauntGet(Resource):
         return make_response(jsonify(resteraunt_obj), 200)  
 
 class ResterauntPost(Resource):
-    @token_required
+    @scope_required(["write:data"])
     def post(self):
         new_resteraunt_name = request.form.get("resteraunt_name")
         if not new_resteraunt_name:
@@ -82,7 +83,7 @@ class ResterauntPost(Resource):
         return make_response(f"Resteraunt with name '{new_resteraunt_name}' succesfully created.", 200)
 
 class ResterauntDelete(Resource):
-    @token_required
+    @scope_required(["delete:data"])
     def delete(self, resteraunt_id):
         existing_resteraunt = Resteraunt.query.get(resteraunt_id)
         if not existing_resteraunt:

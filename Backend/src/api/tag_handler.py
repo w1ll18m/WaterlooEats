@@ -2,10 +2,11 @@ from flask_restful import Resource
 from flask import request, jsonify, make_response
 from ..database.tags import Tag
 from ..database.resteraunt import Resteraunt
-from ..api.auth_handler import token_required
+from ..api.auth_handler import token_required, scope_required
 from .. import db
 
 class TagListAll(Resource):
+    @token_required
     def get(self, resteraunt_id):
         existing_tags = Tag.query.filter_by(resteraunt_id=resteraunt_id).all()
 
@@ -23,7 +24,7 @@ class TagListAll(Resource):
         return jsonify(tag_list)
 
 class TagPost(Resource):
-    @token_required
+    @scope_required(["write:data"])
     def post(self):
         new_tag_name = request.form.get("tag_name")
         if not new_tag_name:
@@ -48,7 +49,7 @@ class TagPost(Resource):
         return make_response(f"Tag with name '{new_tag_name}' succesfully created.", 200)
     
 class TagDelete(Resource):
-    @token_required
+    @scope_required(["delete:data"])
     def delete(self, tag_id):
         existing_tag = Tag.query.filter_by(tag_id=tag_id).first()
         if not existing_tag:

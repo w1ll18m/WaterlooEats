@@ -3,10 +3,11 @@ from flask import request, jsonify
 from ..database.product_tags import ProductTags
 from ..database.product import Product
 from ..database.tags import Tag
-from ..api.auth_handler import token_required
+from ..api.auth_handler import token_required, scope_required
 from .. import db
 
 class ListProductByTag(Resource):
+    @token_required
     def post(self, tag_id):
         existing_entries = ProductTags.query.filter_by(tag_id=tag_id)
 
@@ -43,6 +44,7 @@ class ListProductByTag(Resource):
         return jsonify(product_obj_list)
 
 class ListTagByProduct(Resource):
+    @token_required
     def get(self, product_id):
         existing_entries = ProductTags.query.filter_by(product_id=product_id).all()
 
@@ -65,6 +67,7 @@ class ListTagByProduct(Resource):
         return jsonify(tag_obj_list)
 
 class ProductTagPost(Resource):
+    @scope_required(["write:data"])
     def post(self):
         new_product_id = request.form.get("product_id")
         if not new_product_id:
@@ -92,6 +95,7 @@ class ProductTagPost(Resource):
         return f"Entry with name product_id '{new_product_id}' and tag_id '{new_tag_id}' succesfully created."
 
 class ProductTagDelete(Resource):
+    @scope_required(["delete:data"])
     def delete(self, product_id, tag_id):
         existing_entries = ProductTags.query.filter_by(tag_id=tag_id).all()
         existing_entry = existing_entries.filter_by(product_id=product_id).first()

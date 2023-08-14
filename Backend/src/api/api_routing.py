@@ -1,10 +1,8 @@
-from flask import render_template
 from .product_handler import *
 from .tag_handler import *
 from .product_tags_handler import *
 from .resteraunt_handler import *
 from .auth_handler import *
-import os
 
 class Routes():
     def __init__(self, flask_app, flask_api):
@@ -27,14 +25,15 @@ class Routes():
             {"class": ProductTagPost, "route_url": "/product-tags/add"}, # POST
             {"class": ProductTagDelete, "route_url": "/product-tags/delete/<int:product_id>/<int:tag_id>"}, # DELETE
 
-            {"class": SignUpUser, "route_url": "/auth/add-user"}, # POST
-            {"class": Login, "route_url": "/auth/login"}, # POST
-            {"class": ValidateJWTToken, "route_url": "/auth/checkjwt"}, # GET
-            {"class": ValidateExistingUser, "route_url": "/auth/checkuser"}, # POST
-
             {"class": CheckExistingUser, "route_url": "/auth/check-existing-user"}, # POST
             {"class": CreateNewUser, "route_url": "/auth/create-user"}, # POST
             {"class": ValidateAuth0Token, "route_url": "/auth/checkauth0"}, # GET
+
+            # THE FOLLOWING ROUTES WERE USED FOR OLD JWT TOKEN AUTHENTICATION SYSTEM:
+            # {"class": SignUpUser, "route_url": "/auth/add-user"}, # POST
+            # {"class": Login, "route_url": "/auth/login"}, # POST
+            # {"class": ValidateJWTToken, "route_url": "/auth/checkjwt"}, # GET
+            # {"class": ValidateExistingUser, "route_url": "/auth/checkuser"}, # POST
         ]
 
         self.flask_app = flask_app
@@ -43,7 +42,3 @@ class Routes():
     def setRoutes(self):
         for route in self.routes:
             self.flask_api.add_resource(route["class"], route["route_url"])
-        
-        @self.flask_app.route("/home")
-        def home():
-            return("Home")

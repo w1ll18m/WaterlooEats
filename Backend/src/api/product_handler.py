@@ -2,10 +2,11 @@ from flask_restful import Resource
 from flask import request, jsonify, make_response
 from ..database.product import Product
 from ..database.resteraunt import Resteraunt
-from ..api.auth_handler import token_required
+from ..api.auth_handler import token_required, scope_required
 from .. import db
 
 class ProductListAll(Resource):
+    @token_required
     def post(self, resteraunt_id):
         existing_products = Product.query.filter_by(resteraunt_id=resteraunt_id)
 
@@ -37,7 +38,7 @@ class ProductListAll(Resource):
         return jsonify(product_list)
 
 class ProductPost(Resource):
-    @token_required
+    @scope_required(["write:data"])
     def post(self):
         new_product_name = request.form.get("product_name")
         if not new_product_name:
@@ -80,7 +81,7 @@ class ProductPost(Resource):
         return make_response(f"Product with name '{new_product_name}' succesfully created.", 200)
     
 class ProductDelete(Resource):
-    @token_required
+    @scope_required(["delete:data"])
     def delete(self, product_id):
         existing_product = Product.query.filter_by(product_id=product_id).first()
         if not existing_product:
@@ -92,7 +93,7 @@ class ProductDelete(Resource):
         return make_response(f"Product with id '{product_id}' sucessfully deleted", 200)
 
 class ProductDeleteByName(Resource):
-    @token_required
+    @scope_required(["delete:data"])
     def delete(self, product_name):
         existing_product = Product.query.filter_by(product_name=product_name).first()
         if not existing_product:
