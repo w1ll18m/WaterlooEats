@@ -14,7 +14,6 @@ const NavBar = () => {
     const handleLogOut = () => {
         authentication.logout()
         logout()
-        navigate("/login")
     }
 
     return (
@@ -29,9 +28,8 @@ const NavBar = () => {
                         WaterlooEats
                     </Typography>
 
-                    {!authentication.user && <Button color="inherit" onClick={() => navigate("/login")}> Login </Button>}
-                    {!authentication.user && <Button color="inherit" onClick={() => navigate("/sign-up")}> Sign Up </Button>}
-                    {authentication.user && <Button color="inherit" onClick={navigate("/resteraunts")}> Resteraunts </Button>}
+                    {!isAuthenticated && <Button color="inherit" onClick={() => navigate("/login")}> Login </Button>}
+                    {isAuthenticated && <Button color="inherit" onClick={() => navigate("/resteraunts")}> Resteraunts </Button>}
                     {isAuthenticated && <ProfileIcon/>}
                     {isAuthenticated && <Button color="inherit" onClick={handleLogOut}> Sign Out </Button>}
                 </Toolbar>

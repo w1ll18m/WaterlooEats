@@ -11,9 +11,14 @@ const SignupPage = () => {
     const navigate = useNavigate()
     const { getIdTokenClaims, getAccessTokenSilently } = useAuth0()
 
-    getAccessTokenSilently().then((data) => {
-        console.log(data)
-    })
+    const getAccessToken = async () => {
+        let accessToken = await getAccessTokenSilently({
+            scope: "read:data"
+        })
+        console.log("Access Token", accessToken)
+    }
+
+    getAccessToken()
 
     const handleCreateUser = async () => {
         const idToken = await getIdTokenClaims()

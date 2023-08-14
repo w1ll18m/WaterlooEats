@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.css'
 
 const domain = process.env.REACT_APP_AUTH0_DOMAIN
 const client_id = process.env.REACT_APP_AUTH0_CLIENT_ID
+const audience = process.env.REACT_APP_AUTH0_AUDIENCE
 
 // redirectURI is url that auth0 should redirect after authentication
 // onRedirectCallback is the function that should be called after authentication
@@ -15,7 +16,15 @@ const client_id = process.env.REACT_APP_AUTH0_CLIENT_ID
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <Auth0Provider domain={domain} clientId={client_id} redirectUri="http://localhost:3000/auth0/authorization-handler">
+    <Auth0Provider 
+      domain={domain} 
+      clientId={client_id} 
+      authorizationParams={{
+        redirectUri: "http://localhost:3000/auth0/authorization-handler",
+        audience: audience,
+        scope: "openid profile email"
+      }}
+    >
       <App />
     </Auth0Provider>
     <ToastContainer />
