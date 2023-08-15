@@ -1,34 +1,43 @@
 import { useState, useEffect } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const useFetch = (url) => {
-  const [data, setData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const { getAccessTokenSilently } = useAuth0()
+  const [data, setData] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
+      setIsLoading(true)
 
-      try {
-        const response = await fetch(url);
+      try { 
+        const token = await getAccessTokenSilently()
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Authorization": token
+          }
+        })
+
         if (!response.ok) {
-          throw new Error("Failed to fetch data");
+          throw new Error("Failed to fetch data")
         }
 
-        const data = await response.json();
-        // console.log(data) -> uncomment for testing
-        setData(data);
+        const data = await response.json()
+        setData(data)
+        console.log(token) // For Testing Purposes
       } catch (error) {
-        setError(error);
+        setError(error)
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
-    };
+    }
 
-    fetchData();
+    fetchData()
   }, [url]);
 
-  return { data, isLoading, error, setData };
-};
+  return { data, isLoading, error, setData }
+}
 
 export default useFetch;

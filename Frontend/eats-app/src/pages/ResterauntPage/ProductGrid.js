@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import  { createProductCard } from "./ProductCard";
 import { Grid } from "@mui/material";
 
 function ProductGrid({load_endpoint}) {
+    const { getAccessTokenSilently } = useAuth0()
     const [productList, setProductList] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState(false)
@@ -12,17 +14,23 @@ function ProductGrid({load_endpoint}) {
             setIsLoading(true);
 
             try {
-                const response = await fetch(load_endpoint, {method: "POST"});
+                const token = await getAccessTokenSilently()
+                const response = await fetch(load_endpoint, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": token
+                    }
+                })
                 if (!response.ok) {
                   throw new Error("Failed to fetch data");
                 }
         
                 const data = await response.json();
-                setProductList(data);
+                setProductList(data)
             } catch (error) {
-                setError(error);
+                setError(error)
             } finally {
-                setIsLoading(false);
+                setIsLoading(false)
             }
         }
 

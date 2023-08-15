@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import  { createProductCard } from "./ProductCard";
 import { Grid, Typography, IconButton, Button } from "@mui/material";
 import ArrowCircleRightOutlinedIcon from '@mui/icons-material/ArrowCircleRightOutlined';
@@ -7,6 +8,7 @@ import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import ArrowCircleLeftOutlinedIcon from '@mui/icons-material/ArrowCircleLeftOutlined';
 
 function PaginatedProductGrid({load_endpoint, tag_name, items_per}) {
+    const { getAccessTokenSilently } = useAuth0()
     const [productList, setProductList] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState(false)
@@ -34,20 +36,25 @@ function PaginatedProductGrid({load_endpoint, tag_name, items_per}) {
                 formData.append("page_num", pageNumber)
                 formData.append("items_per", items_per)
 
+                const token = await getAccessTokenSilently()
+
                 const response = await fetch(load_endpoint, {
                     method: "POST",
-                    body: formData
-                });
+                    body: formData,
+                    headers: {
+                        "Authorization": token
+                    }
+                })
                 if (!response.ok) {
-                  throw new Error("Failed to fetch data");
+                  throw new Error("Failed to fetch data")
                 }
         
-                const data = await response.json();
-                setProductList(data);
+                const data = await response.json()
+                setProductList(data)
             } catch (error) {
-                setError(error);
+                setError(error)
             } finally {
-                setIsLoading(false);
+                setIsLoading(false)
             }
         }
 

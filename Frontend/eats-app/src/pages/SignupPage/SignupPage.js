@@ -9,16 +9,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 const SignupPage = () => {
     const navigate = useNavigate()
-    const { getIdTokenClaims, getAccessTokenSilently } = useAuth0()
-
-    const getAccessToken = async () => {
-        let accessToken = await getAccessTokenSilently({
-            scope: "read:data"
-        })
-        console.log("Access Token", accessToken)
-    }
-
-    getAccessToken()
+    const { getIdTokenClaims } = useAuth0()
 
     const handleCreateUser = async () => {
         const idToken = await getIdTokenClaims()
