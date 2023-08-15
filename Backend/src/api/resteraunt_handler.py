@@ -1,5 +1,6 @@
 from flask_restful import Resource
-from flask import request, jsonify, make_response
+from flask import request, jsonify, make_response, Response
+from ..utils.redis_client import getOrSetCache
 from ..database.resteraunt import Resteraunt
 from ..api.auth_handler import token_required, scope_required
 from ..database.hours import Hour
@@ -8,22 +9,30 @@ from .. import db
 class ResterauntGet(Resource):
     @token_required
     def get(self, resteraunt_id):
-        existing_resteraunt = Resteraunt.query.get(resteraunt_id)
-        if not existing_resteraunt:
-            return make_response(f"Resteraunt with 'resteraunt_id' {resteraunt_id} does not exist.", 404)
+        def queryResteraunt():
+            existing_resteraunt = Resteraunt.query.get(resteraunt_id)
+            if not existing_resteraunt:
+                return make_response(f"Resteraunt with 'resteraunt_id' {resteraunt_id} does not exist.", 404)
+            
+            resteraunt_obj = {
+                "resteraunt_name": existing_resteraunt.resteraunt_name,
+                "cuisine_type": existing_resteraunt.cuisine_type,
+                "location": existing_resteraunt.location,
+                "description": existing_resteraunt.description,
+                "delivery_fee": existing_resteraunt.delivery_fee,
+                "image_url": existing_resteraunt.image_url,
+                "opening_hours": existing_resteraunt.hour.opening_hours,
+                "closing_hours": existing_resteraunt.hour.closing_hours
+            }
+
+            return resteraunt_obj
         
-        resteraunt_obj = {
-            "resteraunt_name": existing_resteraunt.resteraunt_name,
-            "cuisine_type": existing_resteraunt.cuisine_type,
-            "location": existing_resteraunt.location,
-            "description": existing_resteraunt.description,
-            "delivery_fee": existing_resteraunt.delivery_fee,
-            "image_url": existing_resteraunt.image_url,
-            "opening_hours": existing_resteraunt.hour.opening_hours,
-            "closing_hours": existing_resteraunt.hour.closing_hours
-        }
-        
-        return make_response(jsonify(resteraunt_obj), 200)  
+        query_key = f"resteraunt-get:{resteraunt_id}"
+        query_response = getOrSetCache(query_key, queryResteraunt)
+
+        if isinstance(query_response, Response):
+            return query_response
+        return make_response(jsonify(query_response), 200)  
 
 class ResterauntPost(Resource):
     @scope_required(["write:data"])
