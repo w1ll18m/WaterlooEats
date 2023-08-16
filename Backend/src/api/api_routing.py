@@ -8,6 +8,7 @@ class Routes():
     def __init__(self, flask_app, flask_api):
         self.routes = [
             {"class": ResterauntPost, "route_url": "/resteraunt/add"}, # POST
+            {"class": ResterauntList, "route_url": "/resteraunt/list"}, # GET
             {"class": ResterauntGet, "route_url": "/resteraunt/get/<int:resteraunt_id>"}, # GET
             {"class": ResterauntDelete, "route_url": "/resteraunt/delete/<int:resteraunt_id>"}, # DELETE
 

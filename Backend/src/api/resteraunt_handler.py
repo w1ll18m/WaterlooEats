@@ -1,3 +1,7 @@
+import os
+import json
+import redis
+from dotenv import load_dotenv
 from flask_restful import Resource
 from flask import request, jsonify, make_response, Response
 from ..utils.redis_client import getOrSetCache
@@ -5,6 +9,12 @@ from ..database.resteraunt import Resteraunt
 from ..api.auth_handler import token_required, scope_required
 from ..database.hours import Hour
 from .. import db
+
+load_dotenv()
+DEFAULT_EXPIRATION_TIME = 3600
+redis_server_host = os.getenv("REDIS_SERVER_HOST")
+redis_server_port = os.getenv("REDIS_SERVER_PORT")
+redis_client = redis.StrictRedis(host=redis_server_host, port=redis_server_port, db=0)
 
 class ResterauntGet(Resource):
     @token_required
@@ -29,6 +39,34 @@ class ResterauntGet(Resource):
         
         query_key = f"resteraunt-get:{resteraunt_id}"
         query_response = getOrSetCache(query_key, queryResteraunt)
+
+        if isinstance(query_response, Response):
+            return query_response
+        return make_response(jsonify(query_response), 200)  
+
+class ResterauntList(Resource):
+    def get(self):
+        def queryResterauntList():
+            existing_resteraunts = Resteraunt.query.all()
+
+            resteraunt_list = []
+            for resteraunt in existing_resteraunts:
+                resteraunt_obj = {
+                    "resteraunt_name": resteraunt.resteraunt_name,
+                    "cuisine_type": resteraunt.cuisine_type,
+                    "location": resteraunt.location,
+                    "description": resteraunt.description,
+                    "delivery_fee": resteraunt.delivery_fee,
+                    "image_url": resteraunt.image_url,
+                    "opening_hours": resteraunt.hour.opening_hours,
+                    "closing_hours": resteraunt.hour.closing_hours
+                }
+                resteraunt_list.append(resteraunt_obj)
+
+            return resteraunt_list
+        
+        query_key = "resteraunt-list"
+        query_response = getOrSetCache(query_key, queryResterauntList)
 
         if isinstance(query_response, Response):
             return query_response
@@ -77,9 +115,27 @@ class ResterauntPost(Resource):
 
         new_closing_hours = request.form.get("closing_hours")
         if not new_closing_hours:
-            return make_response("Please prvoide field 'closing_hours'.", 400)
+            return make_response("Please provide field 'closing_hours'.", 400)
         new_closing_hours = str(new_closing_hours).strip()
-        
+
+        # Write to the Cache First in Write Through Pattern (Need to Write to ResterauntList Cached Data)
+        resteraunt_list_data = redis_client.get("resteraunt-list")
+        if resteraunt_list_data is not None:
+            resteraunt_list_data = json.loads(resteraunt_list_data)
+            new_resteraunt = {
+                "resteraunt_name": new_resteraunt_name,
+                "cuisine_type": new_cuisine_type,
+                "location": new_location,
+                "description": new_description,
+                "delivery_fee": new_delivery_fee,
+                "image_url": new_image_url,
+                "opening_hours": new_opening_hours,
+                "closing_hours": new_closing_hours
+            }
+            resteraunt_list_data.append(new_resteraunt)
+            redis_client.setex("resteraunt-list", DEFAULT_EXPIRATION_TIME, json.dumps(resteraunt_list_data))
+
+        # Write to the Database Second in Write Through Pattern
         new_resteraunt = Resteraunt(new_resteraunt_name, new_cuisine_type, new_location, new_description, new_image_url, new_delivery_fee)
         db.session.add(new_resteraunt)
         db.session.commit()
@@ -94,6 +150,20 @@ class ResterauntPost(Resource):
 class ResterauntDelete(Resource):
     @scope_required(["delete:data"])
     def delete(self, resteraunt_id):
+        # Write to the Cache First in Write Through Pattern (Need to Write to ResterauntList, ResterauntGet Cached Data)
+        resteraunt_list_data = redis_client.get("resteraunt-list")
+        if resteraunt_list_data is not None:
+            resteraunt_list_data = json.loads(resteraunt_list_data)
+            for index, value in enumerate(resteraunt_list_data):
+                del resteraunt_list_data[index]
+            redis_client.setex("resteraunt-list", DEFAULT_EXPIRATION_TIME, json.dumps(resteraunt_list_data))
+        
+        resteraunt_get_data = redis_client.get(f"resteraunt-get:{resteraunt_id}")
+        if resteraunt_get_data is not None:
+            resteraunt_get_data = json.loads(resteraunt_get_data)
+            redis_client.delete(f"resteraunt-get:{resteraunt_id}")
+
+        # Write to the Database Second in Write Through Pattern
         existing_resteraunt = Resteraunt.query.get(resteraunt_id)
         if not existing_resteraunt:
             return make_response(f"Resteraunt with id '{resteraunt_id}' does not exist.", 404)

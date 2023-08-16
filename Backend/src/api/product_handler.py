@@ -35,7 +35,7 @@ class ProductListAll(Resource):
 
             product_list.append(product_obj)
 
-        return jsonify(product_list)
+        return make_response(jsonify(product_list), 200)
 
 class ProductPost(Resource):
     @scope_required(["write:data"])
