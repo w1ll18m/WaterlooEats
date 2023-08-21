@@ -1,4 +1,4 @@
-from .. import db
+from ..extensions import db
 
 class Tag(db.Model): # One-to-Many relationship between Resteraunt and Tag
     tag_id = db.Column(

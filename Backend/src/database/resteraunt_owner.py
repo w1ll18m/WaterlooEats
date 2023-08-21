@@ -1,4 +1,4 @@
-from .. import db
+from ..extensions import db
 
 class ResterauntOwner(db.Model):
     id = db.Column(

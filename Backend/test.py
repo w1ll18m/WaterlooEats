@@ -202,6 +202,7 @@ tags = [
     }
 ]
 
+'''
 user_data = {"username": "admin", "password": "password123", "email": "admin@gmail.com"}
 request = requests.post("http://127.0.0.1:5000/auth/add-user", data=user_data)
 print(request.text)
@@ -215,6 +216,11 @@ else:
     print(request.text)
 headers = {
     "Authorization": token
+}
+'''
+
+headers = {
+    "Authorization": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IklKY2psRkE3d0FYVTIwOUdPb1EyTyJ9.eyJpc3MiOiJodHRwczovL2Rldi1leHFqZ2ZrMGs1ODU3Y21yLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJnb29nbGUtb2F1dGgyfDExODMxMzc2NzcyNDY5MTAxNzg0NiIsImF1ZCI6WyJodHRwczovL3dhdGVybG9vZWF0cy1iYWNrZW5kIiwiaHR0cHM6Ly9kZXYtZXhxamdmazBrNTg1N2Ntci51cy5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNjkyNTY3MzQ4LCJleHAiOjE2OTI2NTM3NDgsImF6cCI6IkxjTTc5eTVtNGI4S245OVhkUnBjOElKTk9aRmY5ekVzIiwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTpkYXRhIiwicmVhZDpkYXRhIiwidXBkYXRlOmRhdGEiLCJ3cml0ZTpkYXRhIl19.i6TMGbScuMbGHkSx8N7_VXve4QdQ3a-4i44XzwSAo70rGcXD0Qmq38etiU8hyQxq8MVdH_RT9XcdhiAxoNH28UDAjOft4VGluKr9k8ZBWA7LTc0adhYxpEvmbHmJEidPrt0EfrWo0Tx-vWnOU95yYR5TjK22m-DDV9qSR_oWlxsmVRzJTEOW7CbARn9MjwtHXD3EbAuwj5Do1jF_F4rOgGm0MeEtt7w3Wvy8ZXf4dO_3yyBXKtkWrLokuts_JiPvULt4zH5upWl_2Hx12nLWHFVKqt9AbbrMl_3-37jzQhnNwe_8bGtjy34ej_umebqme8fCuTZh1t0M9R2ocS4vGA"
 }
 
 for resteraunt in resteraunts:

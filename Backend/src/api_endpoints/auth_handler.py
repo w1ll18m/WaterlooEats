@@ -7,7 +7,7 @@ from sqlalchemy import or_
 from flask import request, jsonify, make_response
 from ..database.user import User
 from ..utils.auth_client import validate_auth0_token, get_management_api_token
-from .. import db
+from ..extensions import db
 
 load_dotenv()
 

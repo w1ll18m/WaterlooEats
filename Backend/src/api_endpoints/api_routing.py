@@ -5,7 +5,7 @@ from .resteraunt_handler import *
 from .auth_handler import *
 
 class Routes():
-    def __init__(self, flask_app, flask_api):
+    def __init__(self, flask_api):
         self.routes = [
             {"class": ResterauntPost, "route_url": "/resteraunt/add"}, # POST
             {"class": ResterauntList, "route_url": "/resteraunt/list"}, # GET
@@ -37,7 +37,6 @@ class Routes():
             # {"class": ValidateExistingUser, "route_url": "/auth/checkuser"}, # POST
         ]
 
-        self.flask_app = flask_app
         self.flask_api = flask_api
     
     def setRoutes(self):

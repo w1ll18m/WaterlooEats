@@ -6,7 +6,7 @@ from datetime import datetime
 from flask_restful import Resource
 from flask import current_app, request, jsonify, make_response
 from ....src.database.resteraunt_owner import ResterauntOwner
-from ....src import db
+from ....src.extensions import db
 
 # THE FOLLOWING CLASSES WERE USED FOR OLD JWT TOKEN AUTHENTICATION SYSTEM
 # =========================================================================================================================================================================

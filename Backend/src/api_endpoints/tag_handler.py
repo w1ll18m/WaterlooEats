@@ -2,8 +2,8 @@ from flask_restful import Resource
 from flask import request, jsonify, make_response
 from ..database.tags import Tag
 from ..database.resteraunt import Resteraunt
-from ..api.auth_handler import token_required, scope_required
-from .. import db
+from ..api_endpoints.auth_handler import token_required, scope_required
+from ..extensions import db
 
 class TagListAll(Resource):
     @token_required

@@ -2,13 +2,14 @@ import os
 import json
 import redis
 from dotenv import load_dotenv
+from celery import shared_task
 from flask_restful import Resource
-from flask import request, jsonify, make_response, Response
+from flask import request, jsonify, make_response, current_app, Response
 from ..utils.redis_client import getOrSetCache
 from ..database.resteraunt import Resteraunt
-from ..api.auth_handler import token_required, scope_required
+from ..api_endpoints.auth_handler import token_required, scope_required
 from ..database.hours import Hour
-from .. import db
+from ..extensions import db
 
 load_dotenv()
 DEFAULT_EXPIRATION_TIME = 3600
@@ -147,6 +148,27 @@ class ResterauntPost(Resource):
 
         return make_response(f"Resteraunt with name '{new_resteraunt_name}' succesfully created.", 200)
 
+@shared_task
+def deleteResterauntFromDB(resteraunt_id):
+    existing_resteraunt = Resteraunt.query.get(resteraunt_id)
+    if not existing_resteraunt:
+        response = {
+            "message": f"Resteraunt with id '{resteraunt_id}' does not exist.",
+            "code": 404,
+            "status": False
+        }
+        return response
+        
+    db.session.delete(existing_resteraunt)
+    db.session.commit()
+
+    response = {
+        "message": f"Resteraunt with id '{resteraunt_id}' successfully deleted.",
+        "code": 200,
+        "status": True
+    }
+    return response
+
 class ResterauntDelete(Resource):
     @scope_required(["delete:data"])
     def delete(self, resteraunt_id):
@@ -155,8 +177,9 @@ class ResterauntDelete(Resource):
         if resteraunt_list_data is not None:
             resteraunt_list_data = json.loads(resteraunt_list_data)
             for index, value in enumerate(resteraunt_list_data):
-                del resteraunt_list_data[index]
+                resteraunt_list_data.pop(index)
             redis_client.setex("resteraunt-list", DEFAULT_EXPIRATION_TIME, json.dumps(resteraunt_list_data))
+            redis_client.delete("resteraunt-list")
         
         resteraunt_get_data = redis_client.get(f"resteraunt-get:{resteraunt_id}")
         if resteraunt_get_data is not None:
@@ -164,11 +187,9 @@ class ResterauntDelete(Resource):
             redis_client.delete(f"resteraunt-get:{resteraunt_id}")
 
         # Write to the Database Second in Write Through Pattern
-        existing_resteraunt = Resteraunt.query.get(resteraunt_id)
-        if not existing_resteraunt:
-            return make_response(f"Resteraunt with id '{resteraunt_id}' does not exist.", 404)
-        
-        db.session.delete(existing_resteraunt)
-        db.session.commit()
+        query_response = deleteResterauntFromDB.delay(resteraunt_id)
+
+        if isinstance(query_response, Response):
+            return query_response
 
         return make_response(f"Resteraunt with id '{resteraunt_id}' sucessfully deleted", 200)

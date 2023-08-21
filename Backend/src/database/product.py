@@ -1,4 +1,4 @@
-from .. import db
+from ..extensions import db
 
 class Product(db.Model): # One-to-Many relationship between Resteraunt and Product
     product_id = db.Column(

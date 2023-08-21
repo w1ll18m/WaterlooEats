@@ -1,4 +1,4 @@
-from .. import db
+from ..extensions import db
 
 class Hour(db.Model):
     hours_id = db.Column(

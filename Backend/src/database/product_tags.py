@@ -1,4 +1,4 @@
-from .. import db
+from ..extensions import db
 
 class ProductTags(db.Model): # JointTable between Product and Tag
     product_id = db.Column(

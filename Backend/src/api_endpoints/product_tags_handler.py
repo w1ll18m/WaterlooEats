@@ -3,8 +3,8 @@ from flask import request, jsonify
 from ..database.product_tags import ProductTags
 from ..database.product import Product
 from ..database.tags import Tag
-from ..api.auth_handler import token_required, scope_required
-from .. import db
+from ..api_endpoints.auth_handler import token_required, scope_required
+from ..extensions import db
 
 class ListProductByTag(Resource):
     @token_required

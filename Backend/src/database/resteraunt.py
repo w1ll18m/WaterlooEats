@@ -1,4 +1,4 @@
-from .. import db
+from ..extensions import db
 
 class Resteraunt(db.Model):
     resteraunt_id = db.Column(
